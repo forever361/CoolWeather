@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -35,6 +36,11 @@ import app.coolweather.com.coolweather.util.Utility;
  */
 public class ChooseAreaActivity extends Activity {
     String TAG = "ChooseAreaActivity";
+
+    //上次按下返回键的系统时间
+    private long lastBackTime = 0;
+    //当前按下返回键的系统时间
+    private long currentBackTime = 0;
 
     public static final int LEVEL_PROVINCE = 0;
     public static final int LEVEL_CITY = 1;
@@ -253,20 +259,44 @@ public class ChooseAreaActivity extends Activity {
     /**
      * 捕获Back按键，根据当前的级别来判断，此时应该返回市列表、省列表、还是直接退出。
      */
+//    @Override
+//    public void onBackPressed() {
+//        if (currentLevel == LEVEL_COUNTY) {
+//            queryCities();
+//        } else if (currentLevel == LEVEL_CITY) {
+//            queryProvinces();
+//        } else {
+//            if (isFromWeatherActivity) {
+//                Log.d(TAG, "issi");
+//                Intent intent = new Intent(this, WeatherActivity.class);
+//                startActivity(intent);
+//            }
+//            finish();
+//        }
+//    }
+    //按两次返回键退出程序
     @Override
-    public void onBackPressed() {
-        if (currentLevel == LEVEL_COUNTY) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //捕获返回键按下的事件
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            if (currentLevel == LEVEL_COUNTY) {
             queryCities();
         } else if (currentLevel == LEVEL_CITY) {
-            queryProvinces();
-        } else {
-            if (isFromWeatherActivity) {
-                Log.d(TAG, "issi");
-                Intent intent = new Intent(this, WeatherActivity.class);
-                startActivity(intent);
+            queryProvinces();}
+            else {
+                 //获取当前系统时间的毫秒数
+                 currentBackTime = System.currentTimeMillis();
+                    //比较上次按下返回键和当前按下返回键的时间差，如果大于2秒，则提示再按一次退出
+                if(currentBackTime - lastBackTime > 2 * 1000){
+                Toast.makeText(this, "再按一次返回键退出", Toast.LENGTH_SHORT).show();
+                lastBackTime = currentBackTime;
+                 }else{ //如果两次按下的时间差小于2秒，则退出程序
+                    finish();
+                    }
             }
-            finish();
+            return true;
         }
+        return super.onKeyDown(keyCode, event);
     }
 
 }
