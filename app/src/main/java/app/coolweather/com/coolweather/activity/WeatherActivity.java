@@ -80,7 +80,7 @@ public class WeatherActivity extends Activity implements OnClickListener{
         Log.d(TAG, "hello");
         String countyCode = getIntent().getStringExtra("county_code");
         Log.d(TAG, "haha" + countyCode + "haha");
-        if(!countyCode.isEmpty()){
+        if(!TextUtils.isEmpty(countyCode)){
             //有县级代号时就去查询天气
             publishText.setText("同步中");
             weatherInfoLayout.setVisibility(View.INVISIBLE);
